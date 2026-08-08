@@ -11,12 +11,14 @@
         <link rel="stylesheet" href="css/qgis2web.css">
         <link rel="stylesheet" href="css/fontawesome-all.min.css">
         <link rel="stylesheet" href="css/leaflet-search.css">
+        <link rel="stylesheet" href="css/filter.css">
+<link rel="stylesheet" href="css/nouislider.min.css">
         <link rel="stylesheet" href="css/leaflet.photon.css">
         <link rel="stylesheet" href="css/leaflet-measure.css">
         <style>
         #map {
-            width: 1338px;
-            height: 888px;
+            width: 1227px;
+            height: 600px;
         }
         </style>
         <title></title>
@@ -27,6 +29,7 @@
         <script src="js/qgis2web_expressions.js"></script>
         <script src="js/leaflet.js"></script>
         <script src="js/L.Control.Layers.Tree.min.js"></script>
+        <script src="js/multi-style-layer.js"></script>
         <script src="js/leaflet-svg-shape-markers.min.js"></script>
         <script src="js/leaflet.rotatedMarker.js"></script>
         <script src="js/leaflet.pattern.js"></script>
@@ -38,9 +41,15 @@
         <script src="js/leaflet.photon.js"></script>
         <script src="js/leaflet-measure.js"></script>
         <script src="js/leaflet-search.js"></script>
-        <script src="data/ActiveStations_2.js"></script>
-        <script src="data/PlannedAcquisition_3.js"></script>
-        <script src="data/JulyAcquiredSites_4.js"></script>
+        <script src="js/tailDT.js"></script>
+<script src="js/nouislider.min.js"></script>
+<script src="js/wNumb.js"></script>
+        <script src="data/nigeriastates_2.js"></script>
+        <script src="data/ActiveStations_3.js"></script>
+        <script src="data/PlannedAcquisition_4.js"></script>
+        <script src="data/MegaStnPlanOyo_5.js"></script>
+        <script src="data/MegaStnPlanOgun_6.js"></script>
+        <script src="data/JulyAcquiredSites_7.js"></script>
         <script>
         var highlightLayer;
         function highlightFeature(e) {
@@ -60,7 +69,7 @@
         }
         var map = L.map('map', {
             zoomControl:false, maxZoom:28, minZoom:1
-        }).fitBounds([[6.152375522657184,2.1907611316478377],[8.718886915910588,6.060805399578477]]);
+        }).fitBounds([[6.267787409754526,2.435110834088646],[7.281132496708089,4.510943161042016]]);
         var hash = new L.Hash(map);
         map.attributionControl.setPrefix('<a href="https://github.com/qgis2web/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
@@ -178,7 +187,7 @@
         });
         layer_OpenStreetMap_1;
         map.addLayer(layer_OpenStreetMap_1);
-        function pop_ActiveStations_2(feature, layer) {
+        function pop_nigeriastates_2(feature, layer) {
             layer.on({
                 mouseout: function(e) {
                     for (var i in e.target._eventParents) {
@@ -198,8 +207,62 @@
             });
             var popupContent = '<table>\
                     <tr>\
-                        <td colspan="2">' + (feature.properties['fid'] !== null ? autolinker.link(String(feature.properties['fid']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                        <td colspan="2">' + (feature.properties['adm1_name'] !== null ? autolinker.link(String(feature.properties['adm1_name']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
                     </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_nigeriastates_2_0() {
+            return {
+                pane: 'pane_nigeriastates_2',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_nigeriastates_2');
+        map.getPane('pane_nigeriastates_2').style.zIndex = 402;
+        map.getPane('pane_nigeriastates_2').style['mix-blend-mode'] = 'normal';
+        var layer_nigeriastates_2 = new L.geoJson(json_nigeriastates_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_nigeriastates_2',
+            layerName: 'layer_nigeriastates_2',
+            pane: 'pane_nigeriastates_2',
+            onEachFeature: pop_nigeriastates_2,
+            style: style_nigeriastates_2_0,
+        });
+        bounds_group.addLayer(layer_nigeriastates_2);
+        map.addLayer(layer_nigeriastates_2);
+        function pop_ActiveStations_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (var i in e.target._eventParents) {
+                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
+                            e.target._eventParents[i].resetStyle(e.target);
+                        }
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
                     <tr>\
                         <th scope="row">State</th>\
                         <td class="visible-with-data" id="State">' + (feature.properties['State'] !== null ? autolinker.link(String(feature.properties['State']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
@@ -212,21 +275,12 @@
                         <td>' + (feature.properties['Address'] !== null ? autolinker.link(String(feature.properties['Address']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <td colspan="2">' + (feature.properties['Latitude'] !== null ? autolinker.link(String(feature.properties['Latitude']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['Longitude'] !== null ? autolinker.link(String(feature.properties['Longitude']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
                         <th scope="row">Status</th>\
                         <td>' + (feature.properties['Status'] !== null ? autolinker.link(String(feature.properties['Status']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
                         <th scope="row">Region</th>\
                         <td>' + (feature.properties['Region'] !== null ? autolinker.link(String(feature.properties['Region']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['Country'] !== null ? autolinker.link(String(feature.properties['Country']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
                         <th scope="row">IRS</th>\
@@ -240,11 +294,11 @@
 			layer.bindPopup(content, { maxHeight: 400 });
         }
 
-        function style_ActiveStations_2_0(feature) {
+        function style_ActiveStations_3_0(feature) {
             switch(String(feature.properties['State'])) {
                 case 'LAGOS':
                     return {
-                pane: 'pane_ActiveStations_2',
+                pane: 'pane_ActiveStations_3',
                 radius: 4.8,
                 opacity: 1,
                 color: 'rgba(61,128,53,1.0)',
@@ -260,7 +314,7 @@
                     break;
                 case 'OGUN':
                     return {
-                pane: 'pane_ActiveStations_2',
+                pane: 'pane_ActiveStations_3',
                 radius: 4.8,
                 opacity: 1,
                 color: 'rgba(61,128,53,1.0)',
@@ -276,7 +330,7 @@
                     break;
                 case 'OYO':
                     return {
-                pane: 'pane_ActiveStations_2',
+                pane: 'pane_ActiveStations_3',
                 radius: 4.8,
                 opacity: 1,
                 color: 'rgba(61,128,53,1.0)',
@@ -292,27 +346,27 @@
                     break;
             }
         }
-        map.createPane('pane_ActiveStations_2');
-        map.getPane('pane_ActiveStations_2').style.zIndex = 402;
-        map.getPane('pane_ActiveStations_2').style['mix-blend-mode'] = 'normal';
-        var layer_ActiveStations_2 = new L.geoJson(json_ActiveStations_2, {
+        map.createPane('pane_ActiveStations_3');
+        map.getPane('pane_ActiveStations_3').style.zIndex = 403;
+        map.getPane('pane_ActiveStations_3').style['mix-blend-mode'] = 'normal';
+        var layer_ActiveStations_3 = new L.geoJson(json_ActiveStations_3, {
             attribution: '',
             interactive: true,
-            dataVar: 'json_ActiveStations_2',
-            layerName: 'layer_ActiveStations_2',
-            pane: 'pane_ActiveStations_2',
-            onEachFeature: pop_ActiveStations_2,
+            dataVar: 'json_ActiveStations_3',
+            layerName: 'layer_ActiveStations_3',
+            pane: 'pane_ActiveStations_3',
+            onEachFeature: pop_ActiveStations_3,
             pointToLayer: function (feature, latlng) {
                 var context = {
                     feature: feature,
                     variables: {}
                 };
-                return L.circleMarker(latlng, style_ActiveStations_2_0(feature));
+                return L.circleMarker(latlng, style_ActiveStations_3_0(feature));
             },
         });
-        bounds_group.addLayer(layer_ActiveStations_2);
-        map.addLayer(layer_ActiveStations_2);
-        function pop_PlannedAcquisition_3(feature, layer) {
+        bounds_group.addLayer(layer_ActiveStations_3);
+        map.addLayer(layer_ActiveStations_3);
+        function pop_PlannedAcquisition_4(feature, layer) {
             layer.on({
                 mouseout: function(e) {
                     for (var i in e.target._eventParents) {
@@ -332,17 +386,8 @@
             });
             var popupContent = '<table>\
                     <tr>\
-                        <td colspan="2">' + (feature.properties['id'] !== null ? autolinker.link(String(feature.properties['id']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
                         <th scope="row">SS Size</th>\
                         <td>' + (feature.properties['SS Size'] !== null ? autolinker.link(String(feature.properties['SS Size']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['Lat'] !== null ? autolinker.link(String(feature.properties['Lat']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['Long'] !== null ? autolinker.link(String(feature.properties['Long']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
                     </tr>\
                 </table>';
             var content = removeEmptyRowsFromPopupContent(popupContent, feature);
@@ -352,11 +397,11 @@
 			layer.bindPopup(content, { maxHeight: 400 });
         }
 
-        function style_PlannedAcquisition_3_0(feature) {
+        function style_PlannedAcquisition_4_0(feature) {
             switch(String(feature.properties['SS Size'])) {
                 case '12 Racks':
                     return {
-                pane: 'pane_PlannedAcquisition_3',
+                pane: 'pane_PlannedAcquisition_4',
                 shape: 'diamond',
                 radius: 8.8,
                 opacity: 1,
@@ -373,7 +418,7 @@
                     break;
                 case '6 Racks':
                     return {
-                pane: 'pane_PlannedAcquisition_3',
+                pane: 'pane_PlannedAcquisition_4',
                 shape: 'triangle',
                 radius: 5.6,
                 opacity: 1,
@@ -390,27 +435,27 @@
                     break;
             }
         }
-        map.createPane('pane_PlannedAcquisition_3');
-        map.getPane('pane_PlannedAcquisition_3').style.zIndex = 403;
-        map.getPane('pane_PlannedAcquisition_3').style['mix-blend-mode'] = 'normal';
-        var layer_PlannedAcquisition_3 = new L.geoJson(json_PlannedAcquisition_3, {
+        map.createPane('pane_PlannedAcquisition_4');
+        map.getPane('pane_PlannedAcquisition_4').style.zIndex = 404;
+        map.getPane('pane_PlannedAcquisition_4').style['mix-blend-mode'] = 'normal';
+        var layer_PlannedAcquisition_4 = new L.geoJson(json_PlannedAcquisition_4, {
             attribution: '',
             interactive: true,
-            dataVar: 'json_PlannedAcquisition_3',
-            layerName: 'layer_PlannedAcquisition_3',
-            pane: 'pane_PlannedAcquisition_3',
-            onEachFeature: pop_PlannedAcquisition_3,
+            dataVar: 'json_PlannedAcquisition_4',
+            layerName: 'layer_PlannedAcquisition_4',
+            pane: 'pane_PlannedAcquisition_4',
+            onEachFeature: pop_PlannedAcquisition_4,
             pointToLayer: function (feature, latlng) {
                 var context = {
                     feature: feature,
                     variables: {}
                 };
-                return L.shapeMarker(latlng, style_PlannedAcquisition_3_0(feature));
+                return L.shapeMarker(latlng, style_PlannedAcquisition_4_0(feature));
             },
         });
-        bounds_group.addLayer(layer_PlannedAcquisition_3);
-        map.addLayer(layer_PlannedAcquisition_3);
-        function pop_JulyAcquiredSites_4(feature, layer) {
+        bounds_group.addLayer(layer_PlannedAcquisition_4);
+        map.addLayer(layer_PlannedAcquisition_4);
+        function pop_MegaStnPlanOyo_5(feature, layer) {
             layer.on({
                 mouseout: function(e) {
                     for (var i in e.target._eventParents) {
@@ -430,8 +475,517 @@
             });
             var popupContent = '<table>\
                     <tr>\
-                        <td colspan="2">' + (feature.properties['Station ID'] !== null ? autolinker.link(String(feature.properties['Station ID']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                        <td colspan="2"><strong>SS Size</strong><br />' + (feature.properties['SS Size'] !== null ? autolinker.link(String(feature.properties['SS Size']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
                     </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_MegaStnPlanOyo_5_0(feature) {
+            switch(String(feature.properties['SS Size'])) {
+                case '6':
+                    return {
+                pane: 'pane_MegaStnPlanOyo_5',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(32,25,226,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '12':
+                    return {
+                pane: 'pane_MegaStnPlanOyo_5',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(22,231,196,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '24':
+                    return {
+                pane: 'pane_MegaStnPlanOyo_5',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(235,103,204,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '30':
+                    return {
+                pane: 'pane_MegaStnPlanOyo_5',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(14,147,111,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '48':
+                    return {
+                pane: 'pane_MegaStnPlanOyo_5',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(224,133,59,1.0)',
+                interactive: true,
+            }
+                    break;
+                default:
+                    return {
+                pane: 'pane_MegaStnPlanOyo_5',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(45,195,183,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        function style_MegaStnPlanOyo_5_1(feature) {
+            switch(String(feature.properties['SS Size'])) {
+                case '6':
+                    return {
+                pane: 'pane_MegaStnPlanOyo_5',
+                radius: 1.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(32,25,226,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '12':
+                    return {
+                pane: 'pane_MegaStnPlanOyo_5',
+                radius: 1.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(22,231,196,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '24':
+                    return {
+                pane: 'pane_MegaStnPlanOyo_5',
+                radius: 1.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(235,103,204,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '30':
+                    return {
+                pane: 'pane_MegaStnPlanOyo_5',
+                radius: 1.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(14,147,111,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '48':
+                    return {
+                pane: 'pane_MegaStnPlanOyo_5',
+                radius: 1.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(224,133,59,1.0)',
+                interactive: true,
+            }
+                    break;
+                default:
+                    return {
+                pane: 'pane_MegaStnPlanOyo_5',
+                radius: 1.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(45,195,183,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_MegaStnPlanOyo_5');
+        map.getPane('pane_MegaStnPlanOyo_5').style.zIndex = 405;
+        map.getPane('pane_MegaStnPlanOyo_5').style['mix-blend-mode'] = 'normal';
+        var layer_MegaStnPlanOyo_5 = new L.geoJson.multiStyle(json_MegaStnPlanOyo_5, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_MegaStnPlanOyo_5',
+            layerName: 'layer_MegaStnPlanOyo_5',
+            pane: 'pane_MegaStnPlanOyo_5',
+            onEachFeature: pop_MegaStnPlanOyo_5,
+            pointToLayers: [function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_MegaStnPlanOyo_5_0(feature));
+            },function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_MegaStnPlanOyo_5_1(feature));
+            },
+        ]});
+        bounds_group.addLayer(layer_MegaStnPlanOyo_5);
+        map.addLayer(layer_MegaStnPlanOyo_5);
+        function pop_MegaStnPlanOgun_6(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (var i in e.target._eventParents) {
+                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
+                            e.target._eventParents[i].resetStyle(e.target);
+                        }
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2"><strong>SS Size</strong><br />' + (feature.properties['SS Size'] !== null ? autolinker.link(String(feature.properties['SS Size']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            var content = removeEmptyRowsFromPopupContent(popupContent, feature);
+			layer.on('popupopen', function(e) {
+				addClassToPopupIfMedia(content, e.popup);
+			});
+			layer.bindPopup(content, { maxHeight: 400 });
+        }
+
+        function style_MegaStnPlanOgun_6_0(feature) {
+            switch(String(feature.properties['SS Size'])) {
+                case '6':
+                    return {
+                pane: 'pane_MegaStnPlanOgun_6',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(32,25,226,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '12':
+                    return {
+                pane: 'pane_MegaStnPlanOgun_6',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(22,231,196,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '24':
+                    return {
+                pane: 'pane_MegaStnPlanOgun_6',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(235,103,204,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '30':
+                    return {
+                pane: 'pane_MegaStnPlanOgun_6',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(14,147,111,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '48':
+                    return {
+                pane: 'pane_MegaStnPlanOgun_6',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(224,133,59,1.0)',
+                interactive: true,
+            }
+                    break;
+                default:
+                    return {
+                pane: 'pane_MegaStnPlanOgun_6',
+                radius: 6.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(45,195,183,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        function style_MegaStnPlanOgun_6_1(feature) {
+            switch(String(feature.properties['SS Size'])) {
+                case '6':
+                    return {
+                pane: 'pane_MegaStnPlanOgun_6',
+                radius: 1.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(32,25,226,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '12':
+                    return {
+                pane: 'pane_MegaStnPlanOgun_6',
+                radius: 1.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(22,231,196,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '24':
+                    return {
+                pane: 'pane_MegaStnPlanOgun_6',
+                radius: 1.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(235,103,204,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '30':
+                    return {
+                pane: 'pane_MegaStnPlanOgun_6',
+                radius: 1.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(14,147,111,1.0)',
+                interactive: true,
+            }
+                    break;
+                case '48':
+                    return {
+                pane: 'pane_MegaStnPlanOgun_6',
+                radius: 1.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(224,133,59,1.0)',
+                interactive: true,
+            }
+                    break;
+                default:
+                    return {
+                pane: 'pane_MegaStnPlanOgun_6',
+                radius: 1.4,
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0,
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(45,195,183,1.0)',
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_MegaStnPlanOgun_6');
+        map.getPane('pane_MegaStnPlanOgun_6').style.zIndex = 406;
+        map.getPane('pane_MegaStnPlanOgun_6').style['mix-blend-mode'] = 'normal';
+        var layer_MegaStnPlanOgun_6 = new L.geoJson.multiStyle(json_MegaStnPlanOgun_6, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_MegaStnPlanOgun_6',
+            layerName: 'layer_MegaStnPlanOgun_6',
+            pane: 'pane_MegaStnPlanOgun_6',
+            onEachFeature: pop_MegaStnPlanOgun_6,
+            pointToLayers: [function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_MegaStnPlanOgun_6_0(feature));
+            },function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.circleMarker(latlng, style_MegaStnPlanOgun_6_1(feature));
+            },
+        ]});
+        bounds_group.addLayer(layer_MegaStnPlanOgun_6);
+        map.addLayer(layer_MegaStnPlanOgun_6);
+        function pop_JulyAcquiredSites_7(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (var i in e.target._eventParents) {
+                        if (typeof e.target._eventParents[i].resetStyle === 'function') {
+                            e.target._eventParents[i].resetStyle(e.target);
+                        }
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
                     <tr>\
                         <td colspan="2"><strong>Station Name</strong><br />' + (feature.properties['Station Name'] !== null ? autolinker.link(String(feature.properties['Station Name']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
                     </tr>\
@@ -448,12 +1002,6 @@
                         <td>' + (feature.properties['Status'] !== null ? autolinker.link(String(feature.properties['Status']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
                     </tr>\
                     <tr>\
-                        <td colspan="2">' + (feature.properties['Latitude'] !== null ? autolinker.link(String(feature.properties['Latitude']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
-                        <td colspan="2">' + (feature.properties['Longitude'] !== null ? autolinker.link(String(feature.properties['Longitude']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
-                    </tr>\
-                    <tr>\
                         <th scope="row">IR Space</th>\
                         <td>' + (feature.properties['IR Space'] !== null ? autolinker.link(String(feature.properties['IR Space']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
                     </tr>\
@@ -465,9 +1013,9 @@
 			layer.bindPopup(content, { maxHeight: 400 });
         }
 
-        function style_JulyAcquiredSites_4_0() {
+        function style_JulyAcquiredSites_7_0() {
             return {
-                pane: 'pane_JulyAcquiredSites_4',
+                pane: 'pane_JulyAcquiredSites_7',
                 radius: 4.8,
                 opacity: 1,
                 color: 'rgba(0,0,0,1.0)',
@@ -481,26 +1029,26 @@
                 interactive: true,
             }
         }
-        map.createPane('pane_JulyAcquiredSites_4');
-        map.getPane('pane_JulyAcquiredSites_4').style.zIndex = 404;
-        map.getPane('pane_JulyAcquiredSites_4').style['mix-blend-mode'] = 'normal';
-        var layer_JulyAcquiredSites_4 = new L.geoJson(json_JulyAcquiredSites_4, {
+        map.createPane('pane_JulyAcquiredSites_7');
+        map.getPane('pane_JulyAcquiredSites_7').style.zIndex = 407;
+        map.getPane('pane_JulyAcquiredSites_7').style['mix-blend-mode'] = 'normal';
+        var layer_JulyAcquiredSites_7 = new L.geoJson(json_JulyAcquiredSites_7, {
             attribution: '',
             interactive: true,
-            dataVar: 'json_JulyAcquiredSites_4',
-            layerName: 'layer_JulyAcquiredSites_4',
-            pane: 'pane_JulyAcquiredSites_4',
-            onEachFeature: pop_JulyAcquiredSites_4,
+            dataVar: 'json_JulyAcquiredSites_7',
+            layerName: 'layer_JulyAcquiredSites_7',
+            pane: 'pane_JulyAcquiredSites_7',
+            onEachFeature: pop_JulyAcquiredSites_7,
             pointToLayer: function (feature, latlng) {
                 var context = {
                     feature: feature,
                     variables: {}
                 };
-                return L.circleMarker(latlng, style_JulyAcquiredSites_4_0(feature));
+                return L.circleMarker(latlng, style_JulyAcquiredSites_7_0(feature));
             },
         });
-        bounds_group.addLayer(layer_JulyAcquiredSites_4);
-        map.addLayer(layer_JulyAcquiredSites_4);
+        bounds_group.addLayer(layer_JulyAcquiredSites_7);
+        map.addLayer(layer_JulyAcquiredSites_7);
         const url = {"Nominatim OSM": "https://nominatim.openstreetmap.org/search?format=geojson&addressdetails=1&",
         "France BAN": "https://api-adresse.data.gouv.fr/search/?"}
         var photonControl = L.control.photon({
@@ -555,9 +1103,12 @@
             }
         });
         var overlaysTree = [
-            {label: '<img src="legend/JulyAcquiredSites_4.png" /> July Acquired Sites', layer: layer_JulyAcquiredSites_4},
-            {label: 'Planned Acquisition<br /><table><tr><td style="text-align: center;"><img src="legend/PlannedAcquisition_3_12Racks0.png" /></td><td>12 Racks</td></tr><tr><td style="text-align: center;"><img src="legend/PlannedAcquisition_3_6Racks1.png" /></td><td>6 Racks</td></tr></table>', layer: layer_PlannedAcquisition_3},
-            {label: 'Active Stations<br /><table><tr><td style="text-align: center;"><img src="legend/ActiveStations_2_LAGOS0.png" /></td><td>LAGOS</td></tr><tr><td style="text-align: center;"><img src="legend/ActiveStations_2_OGUN1.png" /></td><td>OGUN</td></tr><tr><td style="text-align: center;"><img src="legend/ActiveStations_2_OYO2.png" /></td><td>OYO</td></tr></table>', layer: layer_ActiveStations_2},
+            {label: '<img src="legend/JulyAcquiredSites_7.png" /> July Acquired Sites', layer: layer_JulyAcquiredSites_7},
+            {label: 'Mega Stn Plan - Ogun<br /><table><tr><td style="text-align: center;"><img src="legend/MegaStnPlanOgun_6_60.png" /></td><td>6</td></tr><tr><td style="text-align: center;"><img src="legend/MegaStnPlanOgun_6_121.png" /></td><td>12</td></tr><tr><td style="text-align: center;"><img src="legend/MegaStnPlanOgun_6_242.png" /></td><td>24</td></tr><tr><td style="text-align: center;"><img src="legend/MegaStnPlanOgun_6_303.png" /></td><td>30</td></tr><tr><td style="text-align: center;"><img src="legend/MegaStnPlanOgun_6_484.png" /></td><td>48</td></tr><tr><td style="text-align: center;"><img src="legend/MegaStnPlanOgun_6_5.png" /></td><td></td></tr></table>', layer: layer_MegaStnPlanOgun_6},
+            {label: 'Mega Stn Plan - Oyo<br /><table><tr><td style="text-align: center;"><img src="legend/MegaStnPlanOyo_5_60.png" /></td><td>6</td></tr><tr><td style="text-align: center;"><img src="legend/MegaStnPlanOyo_5_121.png" /></td><td>12</td></tr><tr><td style="text-align: center;"><img src="legend/MegaStnPlanOyo_5_242.png" /></td><td>24</td></tr><tr><td style="text-align: center;"><img src="legend/MegaStnPlanOyo_5_303.png" /></td><td>30</td></tr><tr><td style="text-align: center;"><img src="legend/MegaStnPlanOyo_5_484.png" /></td><td>48</td></tr><tr><td style="text-align: center;"><img src="legend/MegaStnPlanOyo_5_5.png" /></td><td></td></tr></table>', layer: layer_MegaStnPlanOyo_5},
+            {label: 'Planned Acquisition<br /><table><tr><td style="text-align: center;"><img src="legend/PlannedAcquisition_4_12Racks0.png" /></td><td>12 Racks</td></tr><tr><td style="text-align: center;"><img src="legend/PlannedAcquisition_4_6Racks1.png" /></td><td>6 Racks</td></tr></table>', layer: layer_PlannedAcquisition_4},
+            {label: 'Active Stations<br /><table><tr><td style="text-align: center;"><img src="legend/ActiveStations_3_LAGOS0.png" /></td><td>LAGOS</td></tr><tr><td style="text-align: center;"><img src="legend/ActiveStations_3_OGUN1.png" /></td><td>OGUN</td></tr><tr><td style="text-align: center;"><img src="legend/ActiveStations_3_OYO2.png" /></td><td>OYO</td></tr></table>', layer: layer_ActiveStations_3},
+            {label: '<img src="legend/nigeriastates_2.png" /> nigeria-states', layer: layer_nigeriastates_2},
             {label: "OpenStreetMap", layer: layer_OpenStreetMap_1},
             {label: "Google (Satellite)", layer: layer_GoogleSatellite_0},]
         var lay = L.control.layers.tree(null, overlaysTree,{
@@ -622,12 +1173,12 @@
         });       
         setBounds();
         var i = 0;
-        layer_ActiveStations_2.eachLayer(function(layer) {
+        layer_nigeriastates_2.eachLayer(function(layer) {
             var context = {
                 feature: layer.feature,
                 variables: {}
             };
-            layer.bindTooltip((layer.feature.properties['Location'] !== null?String('<div style="color: #f41212; font-size: 7pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['Location']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_ActiveStations_2'});
+            layer.bindTooltip((layer.feature.properties['adm1_name'] !== null?String('<div style="color: #323232; font-size: 10pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['adm1_name']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_nigeriastates_2'});
             labels.push(layer);
             totalMarkers += 1;
               layer.added = true;
@@ -635,12 +1186,51 @@
               i++;
         });
         var i = 0;
-        layer_JulyAcquiredSites_4.eachLayer(function(layer) {
+        layer_ActiveStations_3.eachLayer(function(layer) {
             var context = {
                 feature: layer.feature,
                 variables: {}
             };
-            layer.bindTooltip((layer.feature.properties['Location'] !== null?String('<div style="color: #0d6ff1; font-size: 10pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['Location']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_JulyAcquiredSites_4'});
+            layer.bindTooltip((layer.feature.properties['Location'] !== null?String('<div style="color: #f41212; font-size: 7pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['Location']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_ActiveStations_3'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+        var i = 0;
+        layer_MegaStnPlanOyo_5.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['SS Size'] !== null?String('<div style="color: #e50808; font-size: 12pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['SS Size']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_MegaStnPlanOyo_5'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+        var i = 0;
+        layer_MegaStnPlanOgun_6.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['SS Size'] !== null?String('<div style="color: #323232; font-size: 10pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['SS Size']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_MegaStnPlanOgun_6'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+        var i = 0;
+        layer_JulyAcquiredSites_7.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['Location'] !== null?String('<div style="color: #0d6ff1; font-size: 10pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['Location']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_JulyAcquiredSites_7'});
             labels.push(layer);
             totalMarkers += 1;
               layer.added = true;
@@ -648,7 +1238,7 @@
               i++;
         });
         map.addControl(new L.Control.Search({
-            layer: layer_ActiveStations_2,
+            layer: layer_ActiveStations_3,
             initial: false,
             hideMarkerOnCollapse: true,
             propertyName: 'Location'}));
@@ -657,15 +1247,251 @@
         } else {
             document.getElementsByClassName('search-button')[1].className += ' fa fa-binoculars';
         }
-        resetLabels([layer_ActiveStations_2,layer_JulyAcquiredSites_4]);
+        var mapDiv = document.getElementById('map');
+        var row = document.createElement('div');
+        row.className="row";
+        row.id="all";
+        row.style.height = "100%";
+        var col1 = document.createElement('div');
+        col1.className="col9";
+        col1.id = "mapWindow";
+        col1.style.height = "99%";
+        col1.style.width = "80%";
+        col1.style.display = "inline-block";
+        var col2 = document.createElement('div');
+        col2.className="col3";
+        col2.id = "menu";
+        col2.style.display = "inline-block";
+        mapDiv.parentNode.insertBefore(row, mapDiv);
+        document.getElementById("all").appendChild(col1);
+        document.getElementById("all").appendChild(col2);
+        col1.appendChild(mapDiv)
+        var Filters = {"SS Size": "str","lang3": "str"};
+        function filterFunc() {
+          map.eachLayer(function(lyr){
+          if ("options" in lyr && "dataVar" in lyr["options"]){
+            features = this[lyr["options"]["dataVar"]].features.slice(0);
+            try{
+              for (key in Filters){
+                keyS = key.replace(/[^a-zA-Z0-9_]/g, "")
+                if (Filters[key] == "str" || Filters[key] == "bool"){
+                  var selection = [];
+                  var options = document.getElementById("sel_" + keyS).options
+                  for (var i=0; i < options.length; i++) {
+                    if (options[i].selected) selection.push(options[i].value);
+                  }
+                    try{
+                      if (key in features[0].properties){
+                        for (i = features.length - 1;
+                          i >= 0; --i){
+                          if (selection.indexOf(
+                          features[i].properties[key])<0
+                          && selection.length>0) {
+                          features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                  }
+                }
+                if (Filters[key] == "int"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (parseInt(features[i].properties[key])
+                          < sliderVals[0]
+                          || parseInt(features[i].properties[key])
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "real"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (features[i].properties[key]
+                          < sliderVals[0]
+                          || features[i].properties[key]
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "date"
+                  || Filters[key] == "datetime"
+                  || Filters[key] == "time"){
+                  try{
+                    if (key in features[0].properties){
+                      HTMLkey = key.replace(/[&\\/\\#,+()$~%.'":*?<>{} ]/g, '');
+                      startdate = document.getElementById("dat_" +
+                        HTMLkey + "_date1").value.replace(" ", "T");
+                      enddate = document.getElementById("dat_" +
+                        HTMLkey + "_date2").value.replace(" ", "T");
+                      for (i = features.length - 1; i >= 0; --i){
+                        if (features[i].properties[key] < startdate
+                          || features[i].properties[key] > enddate){
+                          features.splice(i,1);
+                        }
+                      }
+                    }
+                  } catch(err){
+                  }
+                }
+              }
+            } catch(err){
+            }
+          this[lyr["options"]["layerName"]].clearLayers();
+          this[lyr["options"]["layerName"]].addData(features);
+        var i = 0;
+        layer_nigeriastates_2.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['adm1_name'] !== null?String('<div style="color: #323232; font-size: 10pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['adm1_name']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_nigeriastates_2'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+        var i = 0;
+        layer_ActiveStations_3.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['Location'] !== null?String('<div style="color: #f41212; font-size: 7pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['Location']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_ActiveStations_3'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+        var i = 0;
+        layer_MegaStnPlanOyo_5.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['SS Size'] !== null?String('<div style="color: #e50808; font-size: 12pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['SS Size']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_MegaStnPlanOyo_5'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+        var i = 0;
+        layer_MegaStnPlanOgun_6.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['SS Size'] !== null?String('<div style="color: #323232; font-size: 10pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['SS Size']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_MegaStnPlanOgun_6'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+        var i = 0;
+        layer_JulyAcquiredSites_7.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['Location'] !== null?String('<div style="color: #0d6ff1; font-size: 10pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['Location']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_JulyAcquiredSites_7'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+          }
+          })
+        }
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_SSSize = document.createElement('div');
+            div_SSSize.id = "div_SSSize";
+            div_SSSize.className= "filterselect";
+            document.getElementById("menu").appendChild(div_SSSize);
+            sel_SSSize = document.createElement('select');
+            sel_SSSize.multiple = true;
+            sel_SSSize.size = 3;
+            sel_SSSize.id = "sel_SSSize";
+            var SSSize_options_str = "<option value='' unselected></option>";
+            sel_SSSize.onchange = function(){filterFunc()};
+            SSSize_options_str  += '<option value="12 Racks">12 Racks</option>';
+            SSSize_options_str  += '<option value="6 Racks">6 Racks</option>';
+            SSSize_options_str  += '<option value="6 racks">6 racks</option>';
+            sel_SSSize.innerHTML = SSSize_options_str;
+            div_SSSize.appendChild(sel_SSSize);
+            var lab_SSSize = document.createElement('div');
+            lab_SSSize.innerHTML = 'SS Size';
+            lab_SSSize.className = 'filterlabel';
+            div_SSSize.appendChild(lab_SSSize);
+            var reset_SSSize = document.createElement('div');
+            reset_SSSize.innerHTML = 'clear filter';
+            reset_SSSize.className = 'filterlabel';
+            reset_SSSize.onclick = function() {
+                var options = document.getElementById("sel_SSSize").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_SSSize.appendChild(reset_SSSize);
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_lang3 = document.createElement('div');
+            div_lang3.id = "div_lang3";
+            div_lang3.className= "filterselect";
+            document.getElementById("menu").appendChild(div_lang3);
+            sel_lang3 = document.createElement('select');
+            sel_lang3.multiple = true;
+            sel_lang3.size = 1;
+            sel_lang3.id = "sel_lang3";
+            var lang3_options_str = "<option value='' unselected></option>";
+            sel_lang3.onchange = function(){filterFunc()};
+            lang3_options_str  += '<option value="NULL">NULL</option>';
+            sel_lang3.innerHTML = lang3_options_str;
+            div_lang3.appendChild(sel_lang3);
+            var lab_lang3 = document.createElement('div');
+            lab_lang3.innerHTML = 'lang3';
+            lab_lang3.className = 'filterlabel';
+            div_lang3.appendChild(lab_lang3);
+            var reset_lang3 = document.createElement('div');
+            reset_lang3.innerHTML = 'clear filter';
+            reset_lang3.className = 'filterlabel';
+            reset_lang3.onclick = function() {
+                var options = document.getElementById("sel_lang3").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_lang3.appendChild(reset_lang3);
+        resetLabels([layer_nigeriastates_2,layer_ActiveStations_3,layer_MegaStnPlanOyo_5,layer_MegaStnPlanOgun_6,layer_JulyAcquiredSites_7]);
         map.on("zoomend", function(){
-            resetLabels([layer_ActiveStations_2,layer_JulyAcquiredSites_4]);
+            resetLabels([layer_nigeriastates_2,layer_ActiveStations_3,layer_MegaStnPlanOyo_5,layer_MegaStnPlanOgun_6,layer_JulyAcquiredSites_7]);
         });
         map.on("layeradd", function(){
-            resetLabels([layer_ActiveStations_2,layer_JulyAcquiredSites_4]);
+            resetLabels([layer_nigeriastates_2,layer_ActiveStations_3,layer_MegaStnPlanOyo_5,layer_MegaStnPlanOgun_6,layer_JulyAcquiredSites_7]);
         });
         map.on("layerremove", function(){
-            resetLabels([layer_ActiveStations_2,layer_JulyAcquiredSites_4]);
+            resetLabels([layer_nigeriastates_2,layer_ActiveStations_3,layer_MegaStnPlanOyo_5,layer_MegaStnPlanOgun_6,layer_JulyAcquiredSites_7]);
         });
         </script>
     </body>
