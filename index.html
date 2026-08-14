@@ -10,13 +10,12 @@
         <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
         <link rel="stylesheet" href="css/qgis2web.css">
         <link rel="stylesheet" href="css/fontawesome-all.min.css">
-        <link rel="stylesheet" href="css/leaflet-search.css">
         <link rel="stylesheet" href="css/leaflet.photon.css">
         <link rel="stylesheet" href="css/leaflet-measure.css">
         <style>
         #map {
             width: 1141px;
-            height: 849px;
+            height: 546px;
         }
         </style>
         <title></title>
@@ -38,7 +37,6 @@
         <script src="js/labels.js"></script>
         <script src="js/leaflet.photon.js"></script>
         <script src="js/leaflet-measure.js"></script>
-        <script src="js/leaflet-search.js"></script>
         <script src="data/nigeriastates_2.js"></script>
         <script src="data/ActiveStations_3.js"></script>
         <script src="data/PlannedAcquisition_4.js"></script>
@@ -64,7 +62,7 @@
         }
         var map = L.map('map', {
             zoomControl:false, maxZoom:28, minZoom:1
-        }).fitBounds([[7.193728323695275,3.526440228013412],[7.746082620889984,4.2692165497427785]]);
+        }).fitBounds([[7.230804465785973,3.510026404670001],[7.5237751402995565,4.123433754432815]]);
         var hash = new L.Hash(map);
         map.attributionControl.setPrefix('<a href="https://github.com/qgis2web/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
@@ -470,7 +468,24 @@
             });
             var popupContent = '<table>\
                     <tr>\
-                        <td colspan="2"><strong>SS Size</strong><br />' + (feature.properties['SS Size'] !== null ? autolinker.link(String(feature.properties['SS Size']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                        <th scope="row">IRS</th>\
+                        <td>' + (feature.properties['IRS'] !== null ? autolinker.link(String(feature.properties['IRS']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Location</th>\
+                        <td class="visible-with-data" id="Location">' + (feature.properties['Location'] !== null ? autolinker.link(String(feature.properties['Location']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">SS Size</th>\
+                        <td>' + (feature.properties['SS Size'] !== null ? autolinker.link(String(feature.properties['SS Size']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Status</th>\
+                        <td>' + (feature.properties['Status'] !== null ? autolinker.link(String(feature.properties['Status']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Station Type</th>\
+                        <td>' + (feature.properties['Station Type'] !== null ? autolinker.link(String(feature.properties['Station Type']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
                     </tr>\
                 </table>';
             var content = removeEmptyRowsFromPopupContent(popupContent, feature);
@@ -1225,23 +1240,13 @@
                 feature: layer.feature,
                 variables: {}
             };
-            layer.bindTooltip((layer.feature.properties['Location'] !== null?String('<div style="color: #0d6ff1; font-size: 10pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['Location']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_JulyAcquiredSites_7'});
+            layer.bindTooltip((layer.feature.properties['Location'] !== null?String('<div style="color: #f10d1a; font-size: 14pt; font-family: \'Open Sans\', sans-serif;">' + layer.feature.properties['Location']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_JulyAcquiredSites_7'});
             labels.push(layer);
             totalMarkers += 1;
               layer.added = true;
               addLabel(layer, i);
               i++;
         });
-        map.addControl(new L.Control.Search({
-            layer: layer_ActiveStations_3,
-            initial: false,
-            hideMarkerOnCollapse: true,
-            propertyName: 'Location'}));
-        if (typeof url === 'undefined') {
-            document.getElementsByClassName('search-button')[0].className += ' fa fa-binoculars';
-        } else {
-            document.getElementsByClassName('search-button')[1].className += ' fa fa-binoculars';
-        }
         resetLabels([layer_nigeriastates_2,layer_ActiveStations_3,layer_MegaStnPlanOyo_5,layer_MegaStnPlanOgun_6,layer_JulyAcquiredSites_7]);
         map.on("zoomend", function(){
             resetLabels([layer_nigeriastates_2,layer_ActiveStations_3,layer_MegaStnPlanOyo_5,layer_MegaStnPlanOgun_6,layer_JulyAcquiredSites_7]);
