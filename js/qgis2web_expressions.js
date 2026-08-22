@@ -757,7 +757,7 @@ function fnc_project_color(values, context) {
 
 
 
-function exp_label_FastChargers_5_eval_expression(context) {
+function exp_label_FastChargers_3_eval_expression(context) {
     // Location || ' --- ' || "SS Size"
 
     var feature = context.feature;
@@ -770,7 +770,7 @@ function exp_label_FastChargers_5_eval_expression(context) {
 }
 
 
-function exp_label_48RackStation_6_eval_expression(context) {
+function exp_label_48RackStation_4_eval_expression(context) {
     // Location || ' --- ' || "SS Size"
 
     var feature = context.feature;
@@ -783,7 +783,7 @@ function exp_label_48RackStation_6_eval_expression(context) {
 }
 
 
-function exp_label_24RacksStation_7_eval_expression(context) {
+function exp_label_24RackStation_5_eval_expression(context) {
     // Location || ' --- ' || "SS Size"
 
     var feature = context.feature;
@@ -796,7 +796,7 @@ function exp_label_24RacksStation_7_eval_expression(context) {
 }
 
 
-function exp_label_PetrolStationsBurgerKings_8_eval_expression(context) {
+function exp_label_PetrolStationsBurgerKings_6_eval_expression(context) {
     // Location || ' --- ' || "SS Size"
 
     var feature = context.feature;
@@ -809,7 +809,7 @@ function exp_label_PetrolStationsBurgerKings_8_eval_expression(context) {
 }
 
 
-function exp_label_FastChargers_5_eval_expression(context) {
+function exp_label_FastChargers_3_eval_expression(context) {
     // Location || ' --- ' || "SS Size"
 
     var feature = context.feature;
@@ -822,7 +822,7 @@ function exp_label_FastChargers_5_eval_expression(context) {
 }
 
 
-function exp_label_48RackStation_6_eval_expression(context) {
+function exp_label_48RackStation_4_eval_expression(context) {
     // Location || ' --- ' || "SS Size"
 
     var feature = context.feature;
@@ -835,7 +835,7 @@ function exp_label_48RackStation_6_eval_expression(context) {
 }
 
 
-function exp_label_24RacksStation_7_eval_expression(context) {
+function exp_label_24RackStation_5_eval_expression(context) {
     // Location || ' --- ' || "SS Size"
 
     var feature = context.feature;
@@ -848,7 +848,7 @@ function exp_label_24RacksStation_7_eval_expression(context) {
 }
 
 
-function exp_label_PetrolStationsBurgerKings_8_eval_expression(context) {
+function exp_label_PetrolStationsBurgerKings_6_eval_expression(context) {
     // Location || ' --- ' || "SS Size"
 
     var feature = context.feature;
